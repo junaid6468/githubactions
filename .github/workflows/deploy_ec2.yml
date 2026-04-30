@@ -19,7 +19,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /home/ubuntu/githubactions || git clone https://github.com/junaid6468/githubactions.git
+            mkdir /home/ubuntu/githubactions && cd /home/ubuntu/githubactions || git clone https://github.com/junaid6468/githubactions.git
             cd githubactions
             git pull origin main
             npm install
