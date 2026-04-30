@@ -9,18 +9,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Deploy via SSH
+      - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            mkdir /home/ubuntu/githubactions && cd /home/ubuntu/githubactions || git clone https://github.com/junaid6468/githubactions.git
+            set -e
+
+            echo "🚀 Starting deployment..."
+
+            cd /home/ubuntu
+
+            # Clone repo if not exists
+            if [ ! -d "githubactions" ]; then
+              echo "Cloning repository..."
+              git clone https://github.com/junaid6468/githubactions.git
+            fi
+
             cd githubactions
+
+            echo "Pulling latest code..."
             git pull origin main
+
+            echo "Installing dependencies..."
             npm install
+
+            echo "Restarting application..."
             pm2 restart app || pm2 start app.js
+
+            echo "✅ Deployment completed successfully!"
